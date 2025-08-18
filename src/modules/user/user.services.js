@@ -39,6 +39,32 @@ const userServices = {
         });
 
         return res.status(201).json({message:"Successfully registered" , user});
+    },
+
+    signin : async (req, res) => {
+
+        try {
+            const {email , password} = req.body;
+
+            const user = await userModel.findOne({email});
+            if (!user) {
+                return res.status(401).json({message:"User not found"});
+            }
+
+            const matchedPassword = bcrypt.compareSync(password, user.password);
+
+            if (!matchedPassword) {
+                return res.status(400).json({message:"password not match"});
+            }
+
+            return res.status(200).json({message:"Successfully" , user});
+
+        }catch(err){
+            return res.status(500).json({message:"server  error" , massage:err.message , err});
+        }
+
+
+
     }
 
 

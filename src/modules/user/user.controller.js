@@ -6,6 +6,7 @@ const userRouter = Router();
 
 
 userRouter.route("/signup").post(userServices.signup);
+userRouter.route("/signin").post(userServices.signin);
 
 
 
