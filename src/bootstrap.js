@@ -1,4 +1,6 @@
-import dbConnection from "./dbConnection/dbConnection";
+import dbConnection from "./dbConnection/dbConnection.js";
+import userRouter from "./modules/user/user.controller.js";
+import massageRouter from "./modules/massage/massage.controller.js";
 
 
 const bootstrap = ({app , express}) => {

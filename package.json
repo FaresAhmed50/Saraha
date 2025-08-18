@@ -2,17 +2,22 @@
   "name": "saraha",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodejs --watch index.js",
+    "dev": "nodemon index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "bcrypt": "^6.0.0",
+    "crypto-js": "^4.2.0",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "joi": "^18.0.0",
-    "mongoose": "^8.17.1"
+    "mongoose": "^8.17.1",
+    "nodemon": "^3.1.10"
   }
 }
