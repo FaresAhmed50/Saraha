@@ -12,6 +12,10 @@ const bootstrap = ({app , express}) => {
     dbConnection();
 
 
+    app.use("/users", userRouter);
+    app.use("/massage", massageRouter);
+
+
 
 
 
