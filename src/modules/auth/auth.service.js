@@ -62,9 +62,16 @@ const authService = {
             }
 
             // creat the tokens
-
-            const accessToken = jwt.sign({id : user._id , email , name : user.name , gender : user.gender}, "saraha_accessToken" ,{expiresIn: "1h"});
-            const refreshToken = jwt.sign({id : user._id , email , name : user.name , gender : user.gender}, "saraha_refreshToken",{expiresIn: "10d"});
+            const accessToken = jwt.sign(
+                {id: user._id, email, name: user.name, gender: user.gender},
+                user.role === userRoles.user ? "saraha_accessToken_user" : "saraha_accessToken_admin",
+                {expiresIn: "10h"}
+            );
+            const refreshToken = jwt.sign(
+                {id : user._id , email , name : user.name , gender : user.gender},
+                user.role === userRoles.user ? "saraha_refreshToken_user" : "saraha_refreshToken_admin",
+                {expiresIn: "10d"}
+            );
 
 
             return res.status(200).json({message:"Successfully" , accessToken , refreshToken });
