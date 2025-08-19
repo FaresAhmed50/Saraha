@@ -1,8 +1,9 @@
-import userModel from "../../models/user.model.js";
+import userModel, {userRoles} from "../../models/user.model.js";
 import bcrypt from "bcrypt";
 import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
 import authRouter from "./auth.controller.js";
+import sendEmail from "../../services/sendEmails.js";
 
 
 const authService = {
@@ -35,7 +36,7 @@ const authService = {
             "ConformationEmail",
             {expiresIn: "1h"}
         );
-        const link = `http://localhost:3000/users/conformEmail/${emailToken}`;
+        const link = `http://localhost:3000/auth/conformEmail/${emailToken}`;
 
         const isSendEmail = await sendEmail({html : `<a href='${link}'>click to conform your email</a>`  });
 
@@ -73,6 +74,10 @@ const authService = {
 
             if (!matchedPassword) {
                 return res.status(400).json({message:"password not match"});
+            }
+
+            if(user.conformed === false){
+                return res.status(404).json({message:"user not conformed"});
             }
 
             // creat the tokens

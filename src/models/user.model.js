@@ -6,6 +6,11 @@ export const userGender = {
     female: "female",
 }
 
+export const userRoles = {
+    admin: "admin",
+    user: "user",
+}
+
 
 const userSchema = new mongoose.Schema({
     name : {
