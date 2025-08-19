@@ -1,6 +1,7 @@
 import dbConnection from "./dbConnection/dbConnection.js";
 import userRouter from "./modules/user/user.controller.js";
 import massageRouter from "./modules/massage/massage.controller.js";
+import authRouter from "./modules/auth/auth.controller.js";
 
 
 const bootstrap = ({app , express}) => {
@@ -14,16 +15,10 @@ const bootstrap = ({app , express}) => {
     dbConnection();
 
 
+
+    app.use("/auth", authRouter);
     app.use("/users", userRouter);
     app.use("/massage", massageRouter);
-
-
-
-
-
-
-
-
 
 
 
