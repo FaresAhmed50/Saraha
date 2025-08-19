@@ -93,6 +93,35 @@ const authService = {
         }catch(err){
             return res.status(500).json({message:"server  error" , massage:err.message , err});
         }
+    },
+
+    conformEmail : async (req, res) => {
+        try {
+            const {token} = req.params;
+
+            if(!token){
+                return res.status(400).json({message:"token missing"});
+            }
+
+            const decodedToken = jwt.verify(token, "ConformationEmail");
+
+            // check for user
+            const user = await userModel.findOne({email : decodedToken.email , conformed : false });
+
+            if (!user) {
+                return res.status(401).json({message:"User not found or already confirmed"});
+            }
+
+
+            user.conformed = true;
+
+            await user.save();
+
+            return res.status(200).json({massage: "user conformed successfully"});
+
+        }catch (err){
+            return res.status(500).json({massage : "server  error" , err : err , errMassage : err.massage});
+        }
     }
 
 }
