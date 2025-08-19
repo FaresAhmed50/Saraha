@@ -45,6 +45,11 @@ const userSchema = new mongoose.Schema({
     conformed : {
         type : Boolean,
         default: false
+    },
+    role : {
+        type: String,
+        enum: Object.values(userRoles),
+        default: userRoles.user,
     }
 }, {
     timestamps: true
