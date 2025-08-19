@@ -29,6 +29,20 @@ const authService = {
         //phone encryption
         const encryptedPhone = CryptoJS.AES.encrypt(phone, "saraha_123").toString();
 
+        //send link to conform email
+        const emailToken = jwt.sign(
+            {email},
+            "ConformationEmail",
+            {expiresIn: "1h"}
+        );
+        const link = `http://localhost:3000/users/conformEmail/${emailToken}`;
+
+        const isSendEmail = await sendEmail({html : `<a href='${link}'>click to conform your email</a>`  });
+
+        if(!isSendEmail){
+            return res.status(400).json({message:"fail to send Email"});
+        }
+
 
         // add the user to the DB
         const user = await userModel.create({
