@@ -2,6 +2,7 @@ import dbConnection from "./dbConnection/dbConnection.js";
 import userRouter from "./modules/user/user.controller.js";
 import massageRouter from "./modules/massage/massage.controller.js";
 import authRouter from "./modules/auth/auth.controller.js";
+import {globalErrorHandler} from "./middlewares/errorHandler.middleware.js";
 
 
 const bootstrap = ({app , express}) => {
@@ -26,9 +27,7 @@ const bootstrap = ({app , express}) => {
         return res.status(404).send(`url Not Found ${req.originalUrl}`);
     })
 
-    app.use((err, req, res) => {
-        return res.status(err.cause).json({message: err.message , stack : err.stack , error : err});
-    })
+    app.use(globalErrorHandler)
 
 };
 

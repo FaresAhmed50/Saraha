@@ -13,3 +13,9 @@ export const signInValidator = Joi.object({
     age : Joi.number().min(12).max(60).integer().positive(),
     role : Joi.string(),
 }).with("password" , "conformedPassword").options({presence : "required"});
+
+
+export const signUpValidator = Joi.object({
+    email: generalRules.email.required(),
+    password: generalRules.password.required(),
+}).options({presence : "required"});
