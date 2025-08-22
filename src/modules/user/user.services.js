@@ -7,7 +7,7 @@ const userServices = {
 
     getProfile : async (req, res) => {
 
-            req.user.phone = CryptoJS.AES.decrypt(req.user.phone, "saraha_123").toString(CryptoJS.enc.Utf8);
+            req.user.phone = CryptoJS.AES.decrypt(req.user.phone, process.env.PHONE_ENCRYPTION).toString(CryptoJS.enc.Utf8);
 
             return res.status(200).json({message:"Successfully retrieved user" , user : req.user})
     }

@@ -4,6 +4,8 @@ import CryptoJS from "crypto-js";
 import jwt from "jsonwebtoken";
 import authRouter from "./auth.controller.js";
 import sendEmail from "../../services/sendEmails.js";
+import {generateToken} from "../../utilts/Token/generateToken.utilits.js";
+import {verifyToken} from "../../utilts/Token/verifyToken.utilits.js";
 
 
 const authService = {
@@ -20,17 +22,17 @@ const authService = {
         }
 
         //hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
+        const hashedPassword = await bcrypt.hash(password, process.env.SALTROUNDS);
 
         //phone encryption
-        const encryptedPhone = CryptoJS.AES.encrypt(phone, "saraha_123").toString();
+        const encryptedPhone = CryptoJS.AES.encrypt(phone, process.env.PHONE_ENCRYPTION).toString();
 
         //send link to conform email
-        const emailToken = jwt.sign(
-            {email},
-            "ConformationEmail",
-            {expiresIn: "1h"}
-        );
+        const emailToken = await generateToken({
+            payload : {email} ,
+            signature :  process.env.SEND_EMAIL_SECRET_KEY ,
+            options : {expiresIn: "1h"}
+            });
         const link = `http://localhost:3000/auth/conformEmail/${emailToken}`;
 
         const isSendEmail = await sendEmail({html: `<a href='${link}'>click to conform your email</a>`});
@@ -77,17 +79,16 @@ const authService = {
         }
 
         // creat the tokens
-        const accessToken = jwt.sign(
-            {id: user._id, email, name: user.name, gender: user.gender},
-            user.role === userRoles.user ? "saraha_accessToken_user" : "saraha_accessToken_admin",
-            {expiresIn: "10h"}
-        );
-        const refreshToken = jwt.sign(
-            {id: user._id, email, name: user.name, gender: user.gender},
-            user.role === userRoles.user ? "saraha_refreshToken_user" : "saraha_refreshToken_admin",
-            {expiresIn: "10d"}
-        );
-
+        const accessToken = await generateToken({
+            payload : {id: user._id, email, name: user.name, gender: user.gender},
+            signature : user.role === userRoles.user ? process.env.USER_ACCESS_TOKEN : process.env.ADMIN_ACCESS_TOKEN,
+            options : {expiresIn: "1h"}
+        });
+        const refreshToken = await generateToken({
+            payload : {id: user._id, email, name: user.name, gender: user.gender},
+            signature : user.role === userRoles.user ? process.env.USER_REFRESH_TOKEN : process.env.ADMIN_REFRESH_TOKEN,
+            options : {expiresIn: "10d"}
+        })
 
         return res.status(200).json({message: "Successfully", accessToken, refreshToken});
 
@@ -101,7 +102,10 @@ const authService = {
             throw new Error("token missing", {cause: 400});
         }
 
-        const decodedToken = jwt.verify(token, "ConformationEmail");
+        const decodedToken = await verifyToken({
+            token: token ,
+            signature : process.env.SEND_EMAIL_SECRET_KEY
+        })
 
         // check for user
         const user = await userModel.findOne({email: decodedToken.email, conformed: false});

@@ -24,7 +24,7 @@ const bootstrap = ({app , express}) => {
 
 
     app.use( "{/*demo}" , (req, res) => {
-        return res.status(404).send(`url Not Found ${req.originalUrl}`);
+        throw new Error(`url Not Found ${req.originalUrl}` , {cause : 404})
     })
 
     app.use(globalErrorHandler)

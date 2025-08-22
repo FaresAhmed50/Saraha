@@ -1,12 +1,10 @@
-import CryptoJS from "crypto-js";
 import userModel from "../models/user.model.js";
-import jwt from "jsonwebtoken";
+import {verifyToken} from "../utilts/Token/verifyToken.utilits.js";
 
 
 export const authMiddleware = async (req, res, next) => {
 
 
-    console.log(req.headers);
     const authorization = req.headers["authorization"];
 
 
@@ -24,17 +22,21 @@ export const authMiddleware = async (req, res, next) => {
 
     switch (prefix) {
         case "Bearer":
-            signature = "saraha_accessToken_user";
+            signature = process.env.USER_ACCESS_TOKEN;
             break;
         case "Admin":
-            signature = "saraha_accessToken_admin";
+            signature = process.env.ADMIN_ACCESS_TOKEN;
             break;
         default:
             throw new Error("invalid prefix", {cause: 400})
     }
 
     // decode access token
-    const decodedToken = jwt.verify(token, signature);
+    const decodedToken = verifyToken({
+        token: token,
+        signature: signature,
+    });
+
 
     // check for user
     const user = await userModel.findById(decodedToken.id);

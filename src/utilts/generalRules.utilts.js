@@ -12,9 +12,10 @@ export const generalRules = {
     id : Joi.string().custom(costumeId),
     email: Joi.string().email(),
     password: Joi.string(),
+    authorization : Joi.string(),
     header : Joi.object({
         authorization : Joi.string().required(),
-        host : Joi.string().required(),
+        host : Joi.string(),
         "accept-encoding" : Joi.string(),
         "content-type" : Joi.string(),
         "content-length" : Joi.string(),

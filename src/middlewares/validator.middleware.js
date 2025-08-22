@@ -5,10 +5,18 @@
 const validatorMiddleware = (schema) => {
     return async (req, res, next) => {
 
-        const valid = schema.validate(req.body , {abortEarly: false});
+        let validationError = [];
 
-        if (valid?.error) {
-            return res.status(400).json({error: valid.error});
+        for (const key of Object.keys(schema)) {
+            const result = schema[key].validate(req[key] , {abortEarly: false});
+
+            if (result?.error) {
+                validationError.push(result.error.details);
+            }
+        }
+
+        if(validationError.length ){
+            return res.status(400).send({ massage : "validation Error" , error: validationError});
         }
 
         return next();
