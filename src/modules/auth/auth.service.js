@@ -1,11 +1,11 @@
 import userModel, {userRoles} from "../../models/user.model.js";
-import bcrypt from "bcrypt";
 import CryptoJS from "crypto-js";
-import jwt from "jsonwebtoken";
-import authRouter from "./auth.controller.js";
 import sendEmail from "../../services/sendEmails.js";
 import {generateToken} from "../../utilts/Token/generateToken.utilits.js";
 import {verifyToken} from "../../utilts/Token/verifyToken.utilits.js";
+import {generateHash} from "../../utilts/Hashing/generateHash.utilits.js";
+import {compareHash} from "../../utilts/Hashing/compareHash.utilits.js";
+import {generateEncryption} from "../../utilts/Encryption/generateEncryption.utilits.js";
 
 
 const authService = {
@@ -22,10 +22,16 @@ const authService = {
         }
 
         //hash password
-        const hashedPassword = await bcrypt.hash(password, process.env.SALTROUNDS);
+        const hashedPassword = await generateHash({
+            plainText : password,
+            signature : process.env.SALTROUNDS
+        })
 
         //phone encryption
-        const encryptedPhone = CryptoJS.AES.encrypt(phone, process.env.PHONE_ENCRYPTION).toString();
+        const encryptedPhone = await generateEncryption({
+            planeText: phone,
+            signature : process.env.PHONE_ENCRYPTION
+        });
 
         //send link to conform email
         const emailToken = await generateToken({
@@ -68,7 +74,10 @@ const authService = {
         }
 
         // compare password
-        const matchedPassword = bcrypt.compareSync(password, user.password);
+        const matchedPassword = compareHash({
+            plainText : password,
+            cipherText : user.password
+        });
 
         if (!matchedPassword) {
             throw new Error("password not match", {cause: 400})

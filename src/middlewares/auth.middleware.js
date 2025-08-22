@@ -32,7 +32,7 @@ export const authMiddleware = async (req, res, next) => {
     }
 
     // decode access token
-    const decodedToken = verifyToken({
+    const decodedToken = await verifyToken({
         token: token,
         signature: signature,
     });

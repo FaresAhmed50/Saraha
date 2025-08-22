@@ -1,15 +1,17 @@
-import userModel from "../../models/user.model.js";
-import bcrypt from "bcrypt";
-import CryptoJS from "crypto-js";
-import jwt from "jsonwebtoken";
+import {decryptUtilits} from "../../utilts/Encryption/decrypt.utilits.js";
 
 const userServices = {
 
-    getProfile : async (req, res) => {
+    getProfile: async (req, res) => {
 
-            req.user.phone = CryptoJS.AES.decrypt(req.user.phone, process.env.PHONE_ENCRYPTION).toString(CryptoJS.enc.Utf8);
+        req.user.phone = await decryptUtilits({
+            cipherText: req.user.phone,
+            signature: process.env.PHONE_ENCRYPTION
+        });
 
-            return res.status(200).json({message:"Successfully retrieved user" , user : req.user})
+        req.user.password = undefined;
+
+        return res.status(200).json({message: "Successfully retrieved user", user: req.user})
     }
 
 };
