@@ -12,10 +12,6 @@ const authService = {
 
         const {name , email , password , conformedPassword , age , phone , gender} = req.body;
 
-        // check Password
-        if(password !== conformedPassword){
-            return res.status(400).json({message:"Password must match"});
-        }
 
         // check Email
         const userExist = await userModel.findOne({email});
