@@ -6,13 +6,14 @@ import {verifyToken} from "../../utilts/Token/verifyToken.utilits.js";
 import {generateHash} from "../../utilts/Hashing/generateHash.utilits.js";
 import {compareHash} from "../../utilts/Hashing/compareHash.utilits.js";
 import {generateEncryption} from "../../utilts/Encryption/generateEncryption.utilits.js";
+import {eventEmitter} from "../../utilts/emailEvent/sendEmail.utilits.js";
 
 
 const authService = {
 
     signup: async (req, res) => {
 
-        const {name, email, password, conformedPassword, age, phone, gender} = req.body;
+        const {name, email, password, age, phone, gender} = req.body;
 
         // check Email
         const userExist = await userModel.findOne({email});
@@ -24,7 +25,7 @@ const authService = {
         //hash password
         const hashedPassword = await generateHash({
             plainText : password,
-            signature : process.env.SALTROUNDS
+            signature : Number(process.env.SALTROUNDS)
         })
 
         //phone encryption
@@ -34,18 +35,7 @@ const authService = {
         });
 
         //send link to conform email
-        const emailToken = await generateToken({
-            payload : {email} ,
-            signature :  process.env.SEND_EMAIL_SECRET_KEY ,
-            options : {expiresIn: "1h"}
-            });
-        const link = `http://localhost:3000/auth/conformEmail/${emailToken}`;
-
-        const isSendEmail = await sendEmail({html: `<a href='${link}'>click to conform your email</a>`});
-
-        if (!isSendEmail) {
-            throw new Error("fail to send Email", {cause: 400})
-        }
+        eventEmitter.emit("sendEmail", {email});
 
 
         // add the user to the DB
