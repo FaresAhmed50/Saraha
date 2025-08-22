@@ -1,5 +1,6 @@
 import userModel from "../models/user.model.js";
 import {verifyToken} from "../utilts/Token/verifyToken.utilits.js";
+import revokeModel from "../models/revoke.model.js";
 
 
 export const authMiddleware = async (req, res, next) => {
@@ -37,6 +38,13 @@ export const authMiddleware = async (req, res, next) => {
         signature: signature,
     });
 
+    const revokeToken = await revokeModel.findOne({
+        tokenId : decodedToken.jti,
+    });
+
+    if(revokeToken) {
+        throw new Error("the token is invalid" , {cause : 401})
+    }
 
     // check for user
     const user = await userModel.findById(decodedToken.id);
@@ -44,6 +52,7 @@ export const authMiddleware = async (req, res, next) => {
         throw new Error("User not found", {cause: 401});
     }
 
+    req.decodedToken = decodedToken;
     req.user = user;
 
     return next();

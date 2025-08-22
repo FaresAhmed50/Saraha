@@ -1,5 +1,7 @@
 import userModel, {userRoles} from "../../models/user.model.js";
 import {generateToken , verifyToken , generateHash , compareHash , generateEncryption , eventEmitter} from "../../utilts/utilits.js"
+import {nanoid} from "nanoid";
+import revokeModel from "../../models/revoke.model.js";
 
 
 const authService = {
@@ -74,12 +76,12 @@ const authService = {
         const accessToken = await generateToken({
             payload : {id: user._id, email, name: user.name, gender: user.gender},
             signature : user.role === userRoles.user ? process.env.USER_ACCESS_TOKEN : process.env.ADMIN_ACCESS_TOKEN,
-            options : {expiresIn: "1h"}
+            options : {expiresIn: "1h" , jwtid : nanoid()}
         });
         const refreshToken = await generateToken({
             payload : {id: user._id, email, name: user.name, gender: user.gender},
             signature : user.role === userRoles.user ? process.env.USER_REFRESH_TOKEN : process.env.ADMIN_REFRESH_TOKEN,
-            options : {expiresIn: "10d"}
+            options : {expiresIn: "10d" , jwtid : nanoid()}
         })
 
         return res.status(200).json({message: "Successfully", accessToken, refreshToken});
@@ -111,6 +113,16 @@ const authService = {
         await user.save();
 
         return res.status(200).json({massage: "user conformed successfully"});
+    },
+
+    logout : async (req, res , next) => {
+
+        await revokeModel.create({
+            tokenId: req.decodedToken.jti,
+            expiresAt: req.decodedToken.exp,
+        });
+
+        return res.status(200).json({message: "Successfully logged out"});
     }
 
 }
