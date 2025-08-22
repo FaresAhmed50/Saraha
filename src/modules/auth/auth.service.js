@@ -1,12 +1,5 @@
 import userModel, {userRoles} from "../../models/user.model.js";
-import CryptoJS from "crypto-js";
-import sendEmail from "../../services/sendEmails.js";
-import {generateToken} from "../../utilts/Token/generateToken.utilits.js";
-import {verifyToken} from "../../utilts/Token/verifyToken.utilits.js";
-import {generateHash} from "../../utilts/Hashing/generateHash.utilits.js";
-import {compareHash} from "../../utilts/Hashing/compareHash.utilits.js";
-import {generateEncryption} from "../../utilts/Encryption/generateEncryption.utilits.js";
-import {eventEmitter} from "../../utilts/emailEvent/sendEmail.utilits.js";
+import {generateToken , verifyToken , generateHash , compareHash , generateEncryption , eventEmitter} from "../../utilts/utilits.js"
 
 
 const authService = {

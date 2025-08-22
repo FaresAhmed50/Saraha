@@ -1,4 +1,4 @@
-import {decryptUtilits} from "../../utilts/Encryption/decrypt.utilits.js";
+import {decryptUtilits} from "../../utilts/utilits.js";
 
 const userServices = {
 

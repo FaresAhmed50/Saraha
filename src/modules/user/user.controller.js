@@ -1,16 +1,15 @@
 import {Router} from "express";
-import userServices from "./user.services.js";
 import userService from "./user.services.js";
 import {authMiddleware} from "../../middlewares/auth.middleware.js";
-import validatorMiddleware from "../../middlewares/validator.middleware.js";
-import {getProfileValidator} from "../../validator/user.validator.js";
+import {authorization} from "../../middlewares/authorization.middleware.js";
+import {userRoles} from "../../models/user.model.js";
 
 
 const userRouter = Router();
 
 
 // validatorMiddleware(getProfileValidator) ,
-userRouter.route("/getProfile").get(  authMiddleware , userService.getProfile);
+userRouter.route("/getProfile").get(  authMiddleware , authorization([userRoles.user]) , userService.getProfile);
 
 
 
