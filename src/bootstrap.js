@@ -26,6 +26,10 @@ const bootstrap = ({app , express}) => {
         return res.status(404).send(`url Not Found ${req.originalUrl}`);
     })
 
+    app.use((err, req, res) => {
+        return res.status(err.cause).json({message: err.message , stack : err.stack , error : err});
+    })
+
 };
 
 
