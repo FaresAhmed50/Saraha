@@ -49,6 +49,24 @@ const userServices = {
 
         return res.status(200).json({message: "Successfully updated user", user: req.user})
 
+    },
+
+    getSpecificProfile : async (req, res) => {
+
+        const {id} = req.params;
+
+        const user = await userModel.findById(id).select("name email age gender");
+
+        if(user) {
+            throw new Error("User already exists");
+        }
+
+        return res.status(200).json({massage : "user found", user})
+
+
+
+
+
     }
 
 };

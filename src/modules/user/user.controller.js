@@ -12,7 +12,8 @@ const userRouter = Router();
 
 // validatorMiddleware(getProfileValidator) ,
 userRouter.route("/getProfile").get(  authMiddleware , authorization([userRoles.user]) , userService.getProfile);
-userRouter.route("/updateProfile").patch(authMiddleware , validatorMiddleware(updateProfileValidator) , userService.updateProfile)
+userRouter.route("/updateProfile").patch(authMiddleware , validatorMiddleware(updateProfileValidator) , userService.updateProfile);
+userRouter.route("/getSpecificProfile/:id").get(userService.getSpecificProfile);
 
 
 
