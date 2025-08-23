@@ -1,7 +1,6 @@
 import {EventEmitter} from 'events';
 import {generateToken} from "../Token/generateToken.utilits.js";
 import sendEmail from "../../services/sendEmails.js";
-import {link} from "joi";
 
 export const eventEmitter = new EventEmitter();
 

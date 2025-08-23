@@ -11,7 +11,7 @@ const validatorMiddleware = (schema) => {
             const result = schema[key].validate(req[key] , {abortEarly: false});
 
             if (result?.error) {
-                validationError.push(result.error.details);
+                validationError.push(result.error);
             }
         }
 

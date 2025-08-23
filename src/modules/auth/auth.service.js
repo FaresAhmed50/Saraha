@@ -9,13 +9,24 @@ import {
 } from "../../utilts/utilits.js"
 import {customAlphabet, nanoid} from "nanoid";
 import revokeModel from "../../models/revoke.model.js";
+import cloudinary from "../../utilts/cloudnary/cloudnary.utilits.js";
 
 
 const authService = {
 
-    signup: async (req, res) => {
+        signup: async (req, res) => {
 
         const {name, email, password, age, phone, gender} = req.body;
+        const image = req.file;
+
+        if(!image){
+            throw new Error("No image provided" , {cause : 400});
+        }
+
+        const data = await cloudinary.uploader.upload(req?.file?.path , {
+            folder : "test"
+        });
+
 
         // check Email
         const userExist = await userModel.findOne({email});
@@ -47,7 +58,8 @@ const authService = {
             password: hashedPassword,
             age,
             phone: encryptedPhone,
-            gender
+            gender,
+            image : data?.secure_url
         });
 
         return res.status(201).json({message: "Successfully registered", user});
@@ -241,7 +253,10 @@ const authService = {
         return res.status(200).json({message: "Password reset successfully"});
 
 
-    }
+    },
+
+
+
 
 }
 

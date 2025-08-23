@@ -7,13 +7,14 @@ import {
     signUpValidator, updatePasswordValidator
 } from "../../validator/auth.validator.js";
 import {authMiddleware, refreshTokenMiddleware} from "../../middlewares/auth.middleware.js";
+import {allowedExtensions, MulterHostMiddleware} from "../../middlewares/multer.middleware.js";
 
 
 const authRouter = Router();
 
 
-
-authRouter.route("/signup").post( validatorMiddleware(signInValidator) , authService.signup);
+// ,
+authRouter.route("/signup").post( validatorMiddleware(signInValidator) , MulterHostMiddleware(allowedExtensions.images).single("image") , authService.signup);
 authRouter.route("/signin").post( validatorMiddleware(signUpValidator) , authService.signin);
 authRouter.route("/conformEmail/:token").get(authService.conformEmail);
 authRouter.route("/logout").post( authMiddleware , authService.logout);
