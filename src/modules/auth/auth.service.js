@@ -123,6 +123,23 @@ const authService = {
         });
 
         return res.status(200).json({message: "Successfully logged out"});
+    },
+
+    refreshToken : async (req, res) => {
+
+        const accessToken = await generateToken({
+            payload : {id: req.user._id, email : req.user.email , name: req.user.name, gender: req.user.gender},
+            signature : req.user.role === userRoles.user ? process.env.USER_ACCESS_TOKEN : process.env.ADMIN_ACCESS_TOKEN,
+            options : {expiresIn: "1h" , jwtid : nanoid()}
+        });
+        const refreshToken = await generateToken({
+            payload : {id: req.user._id, email : req.user.email , name: req.user.name, gender: req.user.gender},
+            signature : req.user.role === userRoles.user ? process.env.USER_REFRESH_TOKEN : process.env.ADMIN_REFRESH_TOKEN,
+            options : {expiresIn: "10d" , jwtid : nanoid()}
+        })
+
+        return res.status(200).json({message: "Token created successfully", accessToken, refreshToken});
+
     }
 
 }
