@@ -23,3 +23,12 @@ export const signUpValidator = {
         password: generalRules.password.required(),
     }).options({presence : "required"})
 }
+
+
+export const resetPasswordValidator = {
+    body : Joi.object({
+        oldPassword: generalRules.password.required(),
+        newPassword: generalRules.password.required(),
+        confirmNewPassword: Joi.string().valid(Joi.ref("newPassword")).required(),
+    })
+}

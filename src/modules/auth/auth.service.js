@@ -1,5 +1,8 @@
 import userModel, {userRoles} from "../../models/user.model.js";
-import {generateToken , verifyToken , generateHash , compareHash , generateEncryption , eventEmitter} from "../../utilts/utilits.js"
+import {
+    generateToken, verifyToken, generateHash, compareHash, generateEncryption, eventEmitter,
+    generalRules as user
+} from "../../utilts/utilits.js"
 import {nanoid} from "nanoid";
 import revokeModel from "../../models/revoke.model.js";
 
@@ -139,6 +142,34 @@ const authService = {
         })
 
         return res.status(200).json({message: "Token created successfully", accessToken, refreshToken});
+
+    },
+
+
+    updatePassword : async (req, res) => {
+
+        const {oldPassword, newPassword} = req.body;
+
+        const comparePasswords = await compareHash({
+            cipherText : req.user.password,
+            plainText : oldPassword,
+        });
+
+        if(!comparePasswords) {
+            throw new Error("oldPassword not match" , {cause : 401});
+        }
+
+        const hashedPassword = await generateHash({
+            plainText : newPassword,
+            signature : Number(process.env.SALTROUNDS)
+        });
+
+        req.user.password = hashedPassword;
+
+        await req.user.save();
+
+
+        return res.status(200).json({message: "Password updated successfully"});
 
     }
 
