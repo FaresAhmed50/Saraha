@@ -1,6 +1,7 @@
 import {EventEmitter} from 'events';
 import {generateToken} from "../Token/generateToken.utilits.js";
 import sendEmail from "../../services/sendEmails.js";
+import {link} from "joi";
 
 export const eventEmitter = new EventEmitter();
 
@@ -22,3 +23,17 @@ eventEmitter.on('sendEmail', async (data) => {
 
 
 
+eventEmitter.on('forgetPassword', async (data) => {
+
+    const { email  , otp } = data;
+
+    const isSendEmail = await sendEmail({
+        subject : "forgetPassword",
+        to : email,
+        html: `<h1>OTP : ${otp}</h1>`,
+    });
+
+    if (!isSendEmail) {
+        throw new Error("fail to send Email", {cause: 400})
+    }
+})

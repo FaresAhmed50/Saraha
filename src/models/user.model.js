@@ -55,6 +55,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: Object.values(userRoles),
         default: userRoles.user,
+    },
+    otp : {
+        type: String,
     }
 }, {
     timestamps: true

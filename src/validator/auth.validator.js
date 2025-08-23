@@ -25,10 +25,26 @@ export const signUpValidator = {
 }
 
 
-export const resetPasswordValidator = {
+export const updatePasswordValidator = {
     body : Joi.object({
         oldPassword: generalRules.password.required(),
         newPassword: generalRules.password.required(),
         confirmNewPassword: Joi.string().valid(Joi.ref("newPassword")).required(),
+    })
+};
+
+
+export const forgetPasswordValidator = {
+    body : Joi.object({
+       email: generalRules.email.required(),
+    })
+};
+
+
+export const resetPasswordValidator = {
+    body : Joi.object({
+        email: generalRules.email.required(),
+        otp : Joi.string().length(4).required(),
+        newPassword : generalRules.password.required(),
     })
 }

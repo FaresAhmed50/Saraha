@@ -1,9 +1,13 @@
 import userModel, {userRoles} from "../../models/user.model.js";
 import {
-    generateToken, verifyToken, generateHash, compareHash, generateEncryption, eventEmitter,
-    generalRules as user
+    compareHash,
+    eventEmitter,
+    generateEncryption,
+    generateHash,
+    generateToken,
+    verifyToken
 } from "../../utilts/utilits.js"
-import {nanoid} from "nanoid";
+import {customAlphabet, nanoid} from "nanoid";
 import revokeModel from "../../models/revoke.model.js";
 
 
@@ -159,17 +163,83 @@ const authService = {
             throw new Error("oldPassword not match" , {cause : 401});
         }
 
-        const hashedPassword = await generateHash({
-            plainText : newPassword,
-            signature : Number(process.env.SALTROUNDS)
+        req.user.password = await generateHash({
+            plainText: newPassword,
+            signature: Number(process.env.SALTROUNDS)
         });
-
-        req.user.password = hashedPassword;
 
         await req.user.save();
 
 
         return res.status(200).json({message: "Password updated successfully"});
+
+    },
+
+    forgotPassword : async (req, res) => {
+
+        const {email} = req.body;
+
+        const user = await userModel.findOne({email: email});
+
+        if (!user) {
+            throw new Error("user not found" , {cause : 404});
+        }
+
+        //generate OTP
+        const otp = customAlphabet("0123456789" , 4)()
+
+        eventEmitter.emit("forgetPassword" , {email , otp})
+
+        user.otp = await generateHash({
+            plainText: otp,
+            signature: Number(process.env.SALTROUNDS)
+        });
+
+        await user.save();
+
+        return res.status(200).json({message: "otp send successfully"});
+
+
+    },
+
+
+    resetPassword : async (req, res) => {
+
+        const {email , otp , newPassword} = req.body;
+
+        const user = await userModel.findOne({email: email , otp : {$exists: true}});
+
+        if (!user) {
+            throw new Error("user not found" , {cause : 404});
+        }
+
+        const compareOTP = await compareHash({
+            cipherText : user?.otp,
+            plainText : otp
+        });
+
+        if(!compareOTP) {
+            throw new Error("invalid otp " , {cause : 404});
+        }
+
+        const hashedPassword = await generateHash({
+            plainText: newPassword,
+            signature : Number(process.env.SALTROUNDS)
+        });
+
+        await userModel.updateOne({
+            email: email,
+        }, {
+            password: hashedPassword,
+            $unset: {otp : ""}
+        })
+
+
+
+
+
+        return res.status(200).json({message: "Password reset successfully"});
+
 
     }
 
