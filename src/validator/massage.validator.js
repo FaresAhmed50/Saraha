@@ -8,3 +8,9 @@ export const addMassageValidator = {
         content : Joi.string().min(1).required()
     }).required(),
 }
+
+export const getMassageValidator = {
+    params : Joi.object({
+        id : generalRules.id.required()
+    }).required(),
+}

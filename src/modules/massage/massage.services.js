@@ -22,6 +22,39 @@ const massageServices = {
 
         return res.status(200).json({ massage : "massage created susefully", userMassage});
 
+    },
+
+    getAllMassage : async (req, res) => {
+
+        const massages = await massageModel.find({
+            userId : req?.user?._id,
+        }).populate([
+            {
+                path: "userId",
+                select: "name"
+            }
+        ])
+
+
+        return res.status(200).json({ massage : "success" , massages });
+
+    },
+
+
+    getMassage : async (req, res) => {
+
+        const {id} = req.params;
+
+        const userMassage = await massageModel.find({
+            userId : req?.user?._id,
+            _id : id
+        });
+
+        if(!userMassage){
+            throw new Error("massage does not exist" , {cause : 400});
+        }
+
+        return res.status(200).json({ massage : "success" , userMassage });
     }
 
 }
