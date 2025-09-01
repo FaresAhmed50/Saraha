@@ -13,8 +13,7 @@ import {allowedExtensions, MulterHostMiddleware} from "../../middlewares/multer.
 const authRouter = Router();
 
 
-// ,
-authRouter.route("/signup").post( validatorMiddleware(signInValidator) , MulterHostMiddleware(allowedExtensions.images).single("image") , authService.signup);
+authRouter.route("/signup").post( MulterHostMiddleware(allowedExtensions.images).single("image") ,  validatorMiddleware(signInValidator)  , authService.signup);
 authRouter.route("/signin").post( validatorMiddleware(signUpValidator) , authService.signin);
 authRouter.route("/conformEmail/:token").get(authService.conformEmail);
 authRouter.route("/logout").post( authMiddleware , authService.logout);

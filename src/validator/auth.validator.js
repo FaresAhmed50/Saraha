@@ -13,8 +13,9 @@ export const signInValidator = {
         gender: Joi.string().valid(userGender.male , userGender.female).required(),
         age : Joi.number().min(12).max(60).integer().positive().required(),
         role : Joi.string().required(),
-        image : Joi.string().required(),
-    }).with("password" , "conformedPassword")
+    }).with("password" , "conformedPassword"),
+
+    file: generalRules.file.required(),
 }
 
 
