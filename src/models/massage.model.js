@@ -12,7 +12,8 @@ const massageSchema = new mongoose.Schema({
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "User",
+        required: true,
     }
 
 } , {
@@ -21,3 +22,4 @@ const massageSchema = new mongoose.Schema({
 
 
 const massageModel = mongoose.models.Massage || mongoose.model("Massage", massageSchema);
+export default massageModel;
